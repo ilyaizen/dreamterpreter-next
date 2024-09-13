@@ -23,7 +23,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-10 w-full bg-background text-foreground shadow-md">
+    <header className="w-full bg-background text-foreground shadow-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <Link href="/">
           <span className="text-2xl font-bold">Dreamterpreter AI Chatbot</span>
