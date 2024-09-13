@@ -9,11 +9,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 // Define the structure of a message in the chat
 interface Message {
   text: string; // The content of the message
-  isUser: boolean; // Whether the message is from the user or AI
+  isUser: boolean; // Whether the message is from the user (true) or AI (false)
   id: number; // Unique identifier for the message
   sentiment?: number | null; // Sentiment score of the message (for AI responses)
   tags?: string[]; // Array of tags associated with the message (for AI responses)
-  summary?: string; // Add this line
+  summary?: string; // Brief summary of the dream's key themes (for AI responses)
 }
 
 export function ChatInterface() {
@@ -29,6 +29,7 @@ export function ChatInterface() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Function to scroll to the bottom of the chat
+  // This is memoized to prevent unnecessary re-renders
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -47,15 +48,16 @@ export function ChatInterface() {
   }, [messages, scrollToBottom]);
 
   // Function to handle sending a message
+  // This is memoized to prevent unnecessary re-renders
   const handleSendMessage = useCallback(async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim()) return; // Don't send empty messages
 
     // Create a new user message
     const newUserMessage: Message = { text: inputValue, isUser: true, id: Date.now() };
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    setInputValue('');
-    setErrorMessage(null);
-    setIsLoading(true);
+    setInputValue(''); // Clear input field
+    setErrorMessage(null); // Clear any previous error messages
+    setIsLoading(true); // Set loading state
 
     try {
       // Send the message to the AI API
@@ -83,12 +85,13 @@ export function ChatInterface() {
       console.error('Error:', error);
       setErrorMessage('Failed to get response from AI. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Reset loading state
     }
   }, [inputValue, messages]);
 
-  // Function to parse the AI response and extract sentiment and tags
+  // Function to parse the AI response and extract sentiment, tags, and summary
   const parseAIResponse = (response: string): Message => {
+    // Regular expression to match the bracketed information at the start of the response
     const match = response.match(/^\[([\d.]+),\s*'(.*?)',\s*'(.*?)'\]\s*([\s\S]*)/);
 
     let sentiment = null;
@@ -97,10 +100,10 @@ export function ChatInterface() {
     let text = response;
 
     if (match) {
-      sentiment = parseFloat(match[1]);
-      tags = match[2].split(/,\s*/).map((tag) => tag.trim());
-      summary = match[3];
-      text = match[4].trim(); // This will be the rest of the message without the bracketed part
+      sentiment = parseFloat(match[1]); // Extract sentiment score
+      tags = match[2].split(/,\s*/).map((tag) => tag.trim()); // Extract and clean tags
+      summary = match[3]; // Extract summary
+      text = match[4].trim(); // Extract main message text (everything after the bracketed part)
     }
 
     return {
@@ -145,6 +148,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => (
       } max-w-[80%] break-words`}
     >
       <div>{message.text}</div>
+      {/* Only show metadata for AI messages */}
       {!message.isUser && (
         <MessageMetadata sentiment={message.sentiment} tags={message.tags} summary={message.summary} />
       )}
@@ -152,7 +156,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => (
   </div>
 );
 
-// Component to render metadata (sentiment and tags) for AI messages
+// Component to render metadata (sentiment, tags, and summary) for AI messages
 const MessageMetadata: React.FC<{ sentiment?: number | null; tags?: string[]; summary?: string }> = ({
   sentiment,
   tags,
@@ -160,6 +164,7 @@ const MessageMetadata: React.FC<{ sentiment?: number | null; tags?: string[]; su
 }) => (
   <div className="mt-2 flex flex-col gap-2 text-xs">
     <div className="flex flex-wrap items-center gap-2">
+      {/* Display sentiment score if available */}
       {sentiment !== undefined && sentiment !== null && (
         <div
           className={`inline-block rounded px-2 py-1 ${
@@ -169,6 +174,7 @@ const MessageMetadata: React.FC<{ sentiment?: number | null; tags?: string[]; su
           Sentiment: {sentiment.toFixed(2)}
         </div>
       )}
+      {/* Display tags if available */}
       {tags &&
         tags.map((tag, index) => (
           <span key={index} className="rounded bg-blue-200 px-2 py-1 text-blue-800">
@@ -176,6 +182,7 @@ const MessageMetadata: React.FC<{ sentiment?: number | null; tags?: string[]; su
           </span>
         ))}
     </div>
+    {/* Display summary if available */}
     {summary && <div className="mt-1 italic text-gray-600 dark:text-gray-400">Summary: {summary}</div>}
   </div>
 );
@@ -225,7 +232,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   </div>
 );
 
-// Add this new component at the end of the file
+// Component to show a loading indicator while waiting for AI response
 const LoadingIndicator: React.FC = () => (
   <div className="flex justify-start">
     <div className="animate-pop-in rounded-lg bg-secondary p-3 text-secondary-foreground">
