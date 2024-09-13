@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Initialize the OpenAI client with the API key from environment variables
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -19,7 +18,8 @@ The opening line for each dream interpretation response MUST ALWAYS BE AT THE BE
 OF THE RESPONSE, and contained in brackets:
 
 1. A sentiment score ranging from 0 (negative) to 1 (positive).
-2. Be extremely precise in your sentiment positivity analysis scoring (0.00 to 1.00).
+1.1. Be extremely precise in your sentiment positivity analysis scoring (0.00 to 1.00).
+1.2. Score should be 0 if the dream is really negative, and 1 if the dream is positive.
 2. Brief tags highlighting the dream's key themes.
 3. A brief summary of the dream's key themes.
 

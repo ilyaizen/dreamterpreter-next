@@ -117,7 +117,7 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex h-[600px] w-full max-w-xl flex-col rounded-lg border border-gray-300 bg-background shadow-sm">
+    <div className="flex h-[520px] w-full max-w-2xl flex-col rounded-lg border border-gray-300 bg-background shadow-sm">
       {/* Scrollable area for messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-grow">
         <div className="flex flex-col space-y-4 p-4">
