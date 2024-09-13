@@ -89,9 +89,7 @@ export function ChatInterface() {
 
   // Function to parse the AI response and extract sentiment and tags
   const parseAIResponse = (response: string): Message => {
-    const lines = response.split('\n');
-    const firstLine = lines[0];
-    const match = firstLine.match(/^\[([\d.]+),\s*(.*?),\s*'(.*?)'\]$/);
+    const match = response.match(/^\[([\d.]+),\s*'(.*?)',\s*'(.*?)'\]\s*([\s\S]*)/);
 
     let sentiment = null;
     let tags: string[] = [];
@@ -100,14 +98,9 @@ export function ChatInterface() {
 
     if (match) {
       sentiment = parseFloat(match[1]);
-      // Remove quotes from tags and split them
-      tags = match[2]
-        .replace(/^'|'$/g, '')
-        .split(/[,\s]+/)
-        .map((tag) => tag.trim())
-        .filter((tag) => tag !== '');
+      tags = match[2].split(/,\s*/).map((tag) => tag.trim());
       summary = match[3];
-      text = lines.slice(1).join('\n').trim();
+      text = match[4].trim(); // This will be the rest of the message without the bracketed part
     }
 
     return {
