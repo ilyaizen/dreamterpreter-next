@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -121,13 +121,14 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex h-[600px] w-full max-w-2xl flex-col rounded-lg border border-gray-300 bg-background shadow-sm">
+    <div className="flex h-[600px] w-full max-w-xl flex-col rounded-lg border border-gray-300 bg-background shadow-sm">
       {/* Scrollable area for messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-grow">
         <div className="flex flex-col space-y-4 p-4">
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
+          {isLoading && <LoadingIndicator />}
         </div>
       </ScrollArea>
       {/* Input area for user to type and send messages */}
@@ -205,19 +206,18 @@ const InputArea: React.FC<InputAreaProps> = ({
 }) => (
   <div className="flex flex-col p-4">
     <div className="mb-2 flex">
-      <Textarea
+      <Input
         placeholder="Describe your dream..."
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={(e) => {
-          // Allow sending message with Enter key (without shift)
-          if (e.key === 'Enter' && !e.shiftKey) {
+          // Allow sending message with Enter key
+          if (e.key === 'Enter') {
             e.preventDefault();
             handleSendMessage();
           }
         }}
-        className="mr-2 flex-grow resize-none"
-        rows={3}
+        className="mr-2 flex-grow"
       />
       <Button onClick={handleSendMessage} disabled={isLoading}>
         {isLoading ? 'Analyzing...' : 'Analyze'}
@@ -229,5 +229,18 @@ const InputArea: React.FC<InputAreaProps> = ({
         <AlertDescription>{errorMessage}</AlertDescription>
       </Alert>
     )}
+  </div>
+);
+
+// Add this new component at the end of the file
+const LoadingIndicator: React.FC = () => (
+  <div className="flex justify-start">
+    <div className="animate-pop-in rounded-lg bg-secondary p-3 text-secondary-foreground">
+      <div className="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
   </div>
 );
