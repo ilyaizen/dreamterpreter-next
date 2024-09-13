@@ -15,12 +15,12 @@ If the user's message isn't about dreams, kindly remind them that your sole task
 dream interpretation.
 
 The opening line for each dream interpretation response MUST ALWAYS BE AT THE BEGINNING
-OF THE RESPONSE, and contained in brackets:
+OF THE RESPONSE, and contain in brackets the following information:
 
 1. A sentiment score ranging from 0 (negative) to 1 (positive).
 1.1. Be extremely precise in your sentiment positivity analysis scoring (0.00 to 1.00).
 1.2. Score should be 0 if the dream is really negative, and 1 if the dream is positive.
-2. Brief tags highlighting the dream's key themes.
+2. Brief tags highlighting the dream's key symbols (e.g. water, house, or cat).
 3. A brief summary of the dream's key themes.
 
 Example: [0.42, 'love, anxiety', 'a man is chasing you']
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       ],
     });
 
-    // Extract the AI's response from the completion
+    // Extract the AI's response from the first choice in the completion
     const aiResponse = completion.choices[0].message.content;
 
     // Return the AI's response as JSON

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import Link from 'next/link';
 
 // Define the structure of a message in the chat
 interface Message {
@@ -117,7 +118,7 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex h-[520px] w-full max-w-2xl flex-col rounded-lg border border-gray-300 bg-background shadow-sm">
+    <div className="flex h-[520px] w-full max-w-2xl flex-col rounded-lg border border-gray-300 bg-background shadow-md">
       {/* Scrollable area for messages */}
       <ScrollArea ref={scrollAreaRef} className="flex-grow">
         <div className="flex flex-col space-y-4 p-4">
@@ -164,22 +165,28 @@ const MessageMetadata: React.FC<{ sentiment?: number | null; tags?: string[]; su
 }) => (
   <div className="mt-2 flex flex-col gap-2 text-xs">
     <div className="flex flex-wrap items-center gap-2">
-      {/* Display sentiment score if available */}
+      {/* Display sentiment score as a percentage if available */}
       {sentiment !== undefined && sentiment !== null && (
         <div
           className={`inline-block rounded px-2 py-1 ${
             sentiment > 0.5 ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
           }`}
         >
-          Sentiment: {sentiment.toFixed(2)}
+          Sentiment: {Math.round(sentiment * 100)}%
         </div>
       )}
-      {/* Display tags if available */}
+      {/* Display tags as clickable links if available */}
       {tags &&
         tags.map((tag, index) => (
-          <span key={index} className="rounded bg-blue-200 px-2 py-1 text-blue-800">
+          <Link
+            key={index}
+            href={`https://www.dreambible.com/search.php?q=${encodeURIComponent(tag)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded bg-blue-200 px-2 py-1 text-blue-800 transition-colors hover:bg-blue-300"
+          >
             {tag}
-          </span>
+          </Link>
         ))}
     </div>
     {/* Display summary if available */}
@@ -204,8 +211,10 @@ const InputArea: React.FC<InputAreaProps> = ({
   isLoading,
   errorMessage,
 }) => (
-  <div className="flex flex-col p-4">
-    <div className="mb-2 flex">
+  <div className="flex flex-col p-4 pb-4">
+    {' '}
+    {/* Changed: removed bottom padding */}
+    <div className="flex">
       <Input
         placeholder="Describe your dream..."
         value={inputValue}
