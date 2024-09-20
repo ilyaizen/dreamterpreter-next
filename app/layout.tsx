@@ -7,6 +7,14 @@ import { Footer } from '@/components/Footer';
 export const metadata: Metadata = {
   title: 'Dreamterpreter AI Chatbot',
   description: 'AI-powered dream interpretation chatbot',
+  keywords: ['dream interpretation', 'AI chatbot', 'dream analysis'],
+  openGraph: {
+    title: 'Dreamterpreter AI Chatbot',
+    description: 'AI-powered dream interpretation chatbot',
+    images: ['/og-image.png'],
+    type: 'website',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
