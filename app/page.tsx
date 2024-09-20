@@ -17,7 +17,7 @@ interface Message {
   summary?: string; // Brief summary of the dream's key themes (for AI responses)
 }
 
-export function ChatInterface() {
+function ChatInterface() {
   // State to store all messages in the chat
   const [messages, setMessages] = useState<Message[]>([]);
   // State to store the current input value
@@ -254,7 +254,7 @@ const LoadingIndicator: React.FC = () => (
   </div>
 );
 
-// Add a default export for the page component
+// Update the default export
 export default function Home() {
   return (
     <main className="flex flex-col items-center justify-between px-4 py-8">
